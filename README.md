@@ -1,95 +1,97 @@
-# 📚 Gerador de Gabaritos e Lista de Presença
+# Gerador de Gabaritos e Listas de Presença
 
-Sistema desenvolvido para auxiliar escolas na geração automatizada de gabaritos personalizados e listas de presença.
+Um aplicativo para gerar gabaritos e listas de presença para escolas, com suporte a múltiplos formatos e tipos de lista.
 
-## 🚀 Funcionalidades
+## Funcionalidades Principais
 
-- ✨ Geração automática de gabaritos individuais por aluno
-- 📋 Criação de listas de presença organizadas por turma
-- 🔄 Substituição dinâmica de variáveis em documentos Word
-- 📁 Organização automática em pastas por escola/turma
-- 🎨 Interface gráfica intuitiva
-- 🔍 Suporte a caracteres especiais nos nomes
+### 1. Dois Tipos de Lista
+- **Lista de Alunos**: Para gerar listas de presença de alunos por turma
+- **Lista de Funcionários**: Para gerar listas de presença de funcionários por escola
 
-## 💻 Requisitos do Sistema
+### 2. Suporte a Múltiplos Formatos CSV
+O sistema aceita dois formatos de arquivo CSV:
 
-- Python 3.7 ou superior
+#### Formato de Alunos
+Colunas necessárias:
+- ESCOLA
+- TURMA
+- NOME DO ALUNO
+- PROFESSOR REGENTE
+- ETAPA DE ENSINO
 
-## 📥 Como Instalar
+#### Formato de Funcionários
+Colunas necessárias:
+- NOME DA ESCOLA ou ESCOLA
+- NOME DO PROFESSOR
+- CPF DO PROFESSOR
+- ETAPA
+- TURMA
+- TURNO
 
-1. Instale as dependências:
+### 3. Personalização Visual
+- **10 Paletas de Cores**: Verde Suave, Rosa Delicado, Azul Sereno, Lilás Suave, Marrom Café, Cinza Elegante, Verde Menta, Roxo Real, Laranja Solar, Azul Corporativo
+- Visualização prévia das cores selecionadas
+- Personalização do título da lista
+- Campo para data opcional
 
-   pip install -r requirements.txt
+### 4. Recursos de Geração
+- Opção de gerar apenas lista de presença
+- Opção de gerar lista de presença junto com gabaritos
+- Modo de geração com um ou dois alunos por folha (para gabaritos)
+- Seleção múltipla de escolas
+- Seleção múltipla de etapas de ensino
 
-## 🎯 Como Usar
+## Melhorias Recentes
 
-1. Execute o programa:
+### 1. Lista de Funcionários
+- Novo formato otimizado com colunas ajustadas
+- Campo de assinatura mais amplo
+- Distribuição equilibrada entre nome e assinatura (50/50)
+- Remoção automática de duplicatas baseada no CPF
+- Ordenação alfabética automática
 
-   python main.py
+### 2. Interface
+- Novo botão de tipo de lista
+- Ajuste automático de modo quando "Lista de Funcionários" é selecionada
+- Botão de geração com efeito hover
+- Preview de cores mais intuitivo
 
-2. Na interface gráfica:
-   - Selecione o arquivo CSV com dados dos alunos
-   - Escolha o modelo Word (.docx) para gabaritos
-   - Selecione a pasta onde serão salvos os arquivos
-   - Clique em "Gerar Documentos"
+### 3. Organização de Arquivos
+- Estrutura de pastas otimizada por escola
+- Nomenclatura padronizada dos arquivos
+- Sanitização automática de nomes de arquivo
 
-### 📊 Estrutura do CSV
+## Como Usar
 
-O arquivo CSV deve estar formatado com ponto e vírgula (;) e conter as colunas:
+1. Inicie o aplicativo
+2. Selecione o tipo de lista (Alunos ou Funcionários)
+3. Carregue o arquivo CSV com os dados
+4. Selecione a(s) escola(s) desejada(s)
+5. Escolha a etapa de ensino (se aplicável)
+6. Personalize o título e a data (opcional)
+7. Escolha uma paleta de cores
+8. Selecione o modo de geração (para gabaritos)
+9. Clique em "GERAR DOCUMENTOS"
 
-| ESCOLA | TURMA | NOME DO ALUNO | PROFESSOR REGENTE |
-|--------|-------|---------------|-------------------|
-| Escola Municipal | 5º Ano A | João Silva | Maria Santos |
+## Notas Importantes
 
-### 📝 Modelo Word
-
-No documento modelo (.docx), utilize os seguintes marcadores:
-- `$VARIÁVEL NOME DO ALUNO`
-- `$VARIÁVEL ESCOLA`
-- `$VARIÁVEL TURMA`
-- `$VARIÁVEL PROFESSOR REGENTE`
-
-### 📂 Organização dos Arquivos Gerados
-
+- Ao selecionar "Lista de Funcionários", o sistema automaticamente:
+  - Força o modo de lista única
+  - Ativa "apenas lista de presença"
+  - Remove duplicatas de funcionários
+  - Ajusta o layout para melhor visualização
+- O sistema salvará os arquivos em uma estrutura organizada por escola
+- As listas de presença são geradas em PDF
+- Os gabaritos são gerados em DOCX
+│       ├── lista_presenca_[turma].pdf
+│       ├── aluno1_gabarito.docx
+│       ├── aluno2_gabarito.docx
+│       └── ...
 ```
-Pasta Selecionada/
-├── Escola Municipal/
-│   ├── 5º Ano A/
-│   │   ├── joao_silva_gabarito.docx
-│   │   ├── maria_oliveira_gabarito.docx
-│   │   └── lista_presenca_5_Ano_A.pdf
-│   └── 5º Ano B/
-└── Outra Escola/
-```
 
-## 🛠️ Recursos Técnicos
-
-- ✅ Sanitização automática de nomes de arquivos
-- 📄 Suporte para substituições em:
-  - Parágrafos
-  - Tabelas
-  - Caixas de texto
-- 📊 Lista de presença com design profissional
-- 🔢 Numeração automática de alunos
-- ⚠️ Tratamento robusto de erros
-
-## 📋 Lista de Presença
-
-As listas de presença incluem:
-- Cabeçalho com dados da escola e turma
-- Numeração automática dos alunos
-- Campo para data
-- Contagem total de alunos
-- Campo para assinaturas
-- Rodapé institucional
-
-## ⚠️ Observações Importantes
-
-1. Verifique se os marcadores no modelo Word estão corretos
-2. O CSV deve estar codificado em UTF-8
-3. Nomes com caracteres especiais são tratados automaticamente
-
-
-## 👥 Autor
-
-- Lindilson Silva
+## Observações Técnicas
+- Desenvolvido em Python
+- Interface gráfica com Tkinter
+- Geração de PDF com ReportLab
+- Manipulação de DOCX com python-docx
+- Processamento de dados com Pandas
