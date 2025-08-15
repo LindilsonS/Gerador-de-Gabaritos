@@ -1,97 +1,101 @@
-# Gerador de Gabaritos e Listas de Presença
+# 📄 Gerador de Gabaritos e Listas de Presença  
+### _Desenvolvido por Lindilson Silva_
 
-Um aplicativo para gerar gabaritos e listas de presença para escolas, com suporte a múltiplos formatos e tipos de lista.
+Uma ferramenta prática e personalizável para escolas que precisam gerar **listas de presença** e **gabaritos** de forma rápida e organizada — com suporte a múltiplos formatos de arquivos e visual moderno.
 
-## Funcionalidades Principais
+---
 
-### 1. Dois Tipos de Lista
-- **Lista de Alunos**: Para gerar listas de presença de alunos por turma
-- **Lista de Funcionários**: Para gerar listas de presença de funcionários por escola
+## 🚀 Funcionalidades Principais
 
-### 2. Suporte a Múltiplos Formatos CSV
-O sistema aceita dois formatos de arquivo CSV:
+### ✅ Tipos de Lista
+- **👩‍🏫 Lista de Alunos**: Geração de presença por **turma**.
+- **🏫 Lista de Funcionários**: Geração de presença por **escola**.
 
-#### Formato de Alunos
-Colunas necessárias:
-- ESCOLA
-- TURMA
-- NOME DO ALUNO
-- PROFESSOR REGENTE
-- ETAPA DE ENSINO
+### 📂 Suporte a Múltiplos Formatos CSV
 
-#### Formato de Funcionários
-Colunas necessárias:
-- NOME DA ESCOLA ou ESCOLA
-- NOME DO PROFESSOR
-- CPF DO PROFESSOR
-- ETAPA
-- TURMA
-- TURNO
+#### ➤ Formato para Alunos
+Campos obrigatórios:
+ESCOLA | TURMA | NOME DO ALUNO | PROFESSOR REGENTE | ETAPA DE ENSINO
 
-### 3. Personalização Visual
-- **10 Paletas de Cores**: Verde Suave, Rosa Delicado, Azul Sereno, Lilás Suave, Marrom Café, Cinza Elegante, Verde Menta, Roxo Real, Laranja Solar, Azul Corporativo
-- Visualização prévia das cores selecionadas
+
+#### ➤ Formato para Funcionários
+Campos obrigatórios:
+NOME DA ESCOLA | NOME DO PROFESSOR | CPF DO PROFESSOR | ETAPA | TURMA | TURNO
+
+
+### 🎨 Personalização Visual
+
+- 10 paletas de cores elegantes:
+  - Verde Suave, Rosa Delicado, Azul Sereno, Lilás Suave, Marrom Café, Cinza Elegante, Verde Menta, Roxo Real, Laranja Solar, Azul Corporativo
+- Visualização prévia da cor escolhida
 - Personalização do título da lista
-- Campo para data opcional
+- Campo de data opcional
 
-### 4. Recursos de Geração
-- Opção de gerar apenas lista de presença
-- Opção de gerar lista de presença junto com gabaritos
-- Modo de geração com um ou dois alunos por folha (para gabaritos)
-- Seleção múltipla de escolas
-- Seleção múltipla de etapas de ensino
+### 🛠️ Recursos de Geração
 
-## Melhorias Recentes
+- Gerar **somente listas** ou **listas + gabaritos**
+- Geração de gabaritos com **1 ou 2 alunos por folha**
+- **Seleção múltipla** de escolas e etapas de ensino
+- Exportação em PDF (listas) e DOCX (gabaritos)
 
-### 1. Lista de Funcionários
-- Novo formato otimizado com colunas ajustadas
-- Campo de assinatura mais amplo
-- Distribuição equilibrada entre nome e assinatura (50/50)
-- Remoção automática de duplicatas baseada no CPF
-- Ordenação alfabética automática
+---
 
-### 2. Interface
-- Novo botão de tipo de lista
-- Ajuste automático de modo quando "Lista de Funcionários" é selecionada
-- Botão de geração com efeito hover
-- Preview de cores mais intuitivo
+## 🆕 Melhorias Recentes
 
-### 3. Organização de Arquivos
-- Estrutura de pastas otimizada por escola
-- Nomenclatura padronizada dos arquivos
-- Sanitização automática de nomes de arquivo
+### 🧾 Lista de Funcionários
+- Novo layout com colunas otimizadas
+- Campo de assinatura ampliado (50% do espaço)
+- Remoção automática de duplicatas por CPF
+- Ordenação alfabética dos nomes
 
-## Como Usar
+### 💻 Interface
+- Botão seletor de tipo de lista (Alunos/Funcionários)
+- Modo ajustado automaticamente ao tipo de lista
+- Efeito hover em botões
+- Pré-visualização de cores mais intuitiva
+
+### 📁 Organização de Arquivos
+- Estrutura de pastas por escola
+- Nomes de arquivos padronizados e "limpos"
+- Organização automática de saída:
+lista_presenca_[turma].pdf
+aluno1_gabarito.docx
+aluno2_gabarito.docx
+...
+
+---
+
+## 🧑‍💻 Como Usar
 
 1. Inicie o aplicativo
-2. Selecione o tipo de lista (Alunos ou Funcionários)
-3. Carregue o arquivo CSV com os dados
-4. Selecione a(s) escola(s) desejada(s)
-5. Escolha a etapa de ensino (se aplicável)
-6. Personalize o título e a data (opcional)
-7. Escolha uma paleta de cores
-8. Selecione o modo de geração (para gabaritos)
-9. Clique em "GERAR DOCUMENTOS"
+2. Escolha o tipo de lista: **Alunos** ou **Funcionários**
+3. Carregue o arquivo CSV
+4. Selecione as escolas e etapas desejadas
+5. Personalize o título e a data (opcional)
+6. Escolha uma paleta de cores
+7. Defina o modo de geração (1 ou 2 alunos por folha)
+8. Clique em **GERAR DOCUMENTOS**
 
-## Notas Importantes
+---
 
-- Ao selecionar "Lista de Funcionários", o sistema automaticamente:
-  - Força o modo de lista única
-  - Ativa "apenas lista de presença"
-  - Remove duplicatas de funcionários
-  - Ajusta o layout para melhor visualização
-- O sistema salvará os arquivos em uma estrutura organizada por escola
-- As listas de presença são geradas em PDF
-- Os gabaritos são gerados em DOCX
-│       ├── lista_presenca_[turma].pdf
-│       ├── aluno1_gabarito.docx
-│       ├── aluno2_gabarito.docx
-│       └── ...
-```
+## ⚠️ Notas Importantes
 
-## Observações Técnicas
-- Desenvolvido em Python
-- Interface gráfica com Tkinter
-- Geração de PDF com ReportLab
-- Manipulação de DOCX com python-docx
-- Processamento de dados com Pandas
+- Ao selecionar **Lista de Funcionários**, o sistema:
+  - Ativa automaticamente o modo “somente lista de presença”
+  - Gera uma única lista por escola
+  - Remove duplicatas por CPF
+  - Ajusta o layout visual para melhor legibilidade
+
+- Saída dos arquivos:
+  - **Listas**: PDF
+  - **Gabaritos**: DOCX
+
+---
+
+## 🧪 Tecnologias Utilizadas
+
+- 🐍 **Python**
+- 🖼️ Interface gráfica: **Tkinter**
+- 📝 Geração de documentos Word: **python-docx**
+- 🧾 Geração de PDFs: **ReportLab**
+- 📊 Processamento de dados: **Pandas**
