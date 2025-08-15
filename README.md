@@ -76,6 +76,9 @@ aluno2_gabarito.docx
 7. Defina o modo de geração (1 ou 2 alunos por folha)
 8. Clique em **GERAR DOCUMENTOS**
 
+EXEMPLO DE MODELO WORD SELECIONADO PARA GABARITO:
+<img width="899" height="636" alt="image" src="https://github.com/user-attachments/assets/2eadcd8f-e92b-42ec-8ecd-1a47b338fb4c" />
+
 ---
 
 ## ⚠️ Notas Importantes
