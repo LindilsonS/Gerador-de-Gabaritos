@@ -3,6 +3,8 @@
 
 Uma ferramenta prática e personalizável para escolas que precisam gerar **listas de presença** e **gabaritos** de forma rápida e organizada — com suporte a múltiplos formatos de arquivos e visual moderno.
 
+Essa solução foi implementada no contexto da Secretaria Municipal de Educação, com o objetivo de aproveitar os dados do sistema municipal para facilitar a aplicação das diversas avaliações realizadas ao longo do ano letivo. A adoção dessa ferramenta resultou em uma melhoria significativa no uso do sistema, promovendo maior responsabilidade dos usuários quanto ao registro e à integridade dos dados, especialmente para garantir a correta utilização dos gabaritos. Esse ecossistema informatizado contribuiu para a otimização de todos os processos envolvidos.
+
 ---
 
 ## 🚀 Funcionalidades Principais
