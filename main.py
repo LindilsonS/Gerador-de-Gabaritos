@@ -11,7 +11,10 @@ from reportlab.lib import colors
 from reportlab.platypus import Table, TableStyle
 
 def sanitizar_nome(nome):
+    """Sanitiza o nome removendo caracteres especiais e aspas"""
     nome_str = str(nome)
+    # Remove aspas simples e duplas primeiro
+    nome_str = nome_str.replace("'", "").replace('"', "")
     caracteres_invalidos = r'[<>:"/\\|?*]'
     return re.sub(caracteres_invalidos, '_', nome_str).strip()
 
@@ -196,67 +199,80 @@ def criar_gabaritos(csv_path, modelo_path, output_dir, config, etapas_selecionad
         for escola in escolas_selecionadas:
             escola_df = df_filtrado[df_filtrado['ESCOLA'] == escola]
             escola_sanitizada = sanitizar_nome(escola)
-            base_dir = os.path.join(output_dir, escola_sanitizada)
-            os.makedirs(base_dir, exist_ok=True)
+            
+            # Cria diretório base da escola
+            escola_dir = os.path.join(output_dir, escola_sanitizada)
+            os.makedirs(escola_dir, exist_ok=True)
 
             if config.is_teacher_list:
+                # Para funcionários, mantém na pasta da escola
                 funcionarios = get_unique_teachers(escola_df)
                 criar_lista_presenca(
                     escola, 
                     "funcionarios",
                     funcionarios,
-                    base_dir,
+                    escola_dir,  # Usa diretório da escola
                     config.titulo_lista,
                     config.cores,
                     config.data_lista,
                     is_teacher_list=True
                 )
             else:
-                alunos = escola_df['NOME DO ALUNO'].tolist()
-                professor_regente = escola_df['PROFESSOR REGENTE'].iloc[0] if not escola_df['PROFESSOR REGENTE'].empty else "Não especificado"
-                
-                if config.gerar_lista_presenca or config.apenas_lista_presenca:
-                    criar_lista_presenca(escola, turma_sanitizada, alunos, base_dir, 
-                                       config.titulo_lista, config.cores, config.data_lista)
-                
-                # Só gera os gabaritos se não estiver no modo "apenas lista de presença"
-                if not config.apenas_lista_presenca:
-                    if config.process_mode == "um_aluno":
-                        for aluno in alunos:
-                            doc = Document(modelo_path)
-                            dados_aluno = {
-                                '$VARIÁVEL ESCOLA': escola,
-                                '$VARIÁVEL TURMA': turma,
-                                '$VARIÁVEL PROFESSOR REGENTE': professor_regente,
-                                '$VARIÁVEL NOME DO ALUNO': aluno,
-                                '$VARIÁVEL NOME DO ALUNO 2': ''
-                            }
-                            substituir_variaveis_em_tudo(doc, dados_aluno)
-                            nome_arquivo = f"{sanitizar_nome(aluno)}_gabarito.docx"
-                            doc.save(os.path.join(base_dir, nome_arquivo))
-                            print(f"Arquivo salvo (1 aluno): {nome_arquivo}")
+                # Para alunos, cria subpasta por turma
+                # Modificando como o groupby é processado para evitar o formato de tupla
+                for turma, grupo in escola_df.groupby('TURMA'):
+                    # Remove os parênteses e vírgula do nome da turma
+                    turma = str(turma).strip("(),'")  # Remove (, ), e vírgula
+                    turma_sanitizada = sanitizar_nome(turma)
+                    # Cria subdiretório para a turma
+                    turma_dir = os.path.join(escola_dir, turma_sanitizada)
+                    os.makedirs(turma_dir, exist_ok=True)
 
-                    else:
-                        for i in range(0, len(alunos), 2):
-                            aluno1 = alunos[i]
-                            aluno2 = alunos[i + 1] if (i + 1) < len(alunos) else None
-                            doc = Document(modelo_path)
-                            dados_alunos = {
-                                '$VARIÁVEL ESCOLA': escola,
-                                '$VARIÁVEL TURMA': turma,
-                                '$VARIÁVEL PROFESSOR REGENTE': professor_regente,
-                                '$VARIÁVEL NOME DO ALUNO': aluno1,
-                                '$VARIÁVEL NOME DO ALUNO 2': aluno2 if aluno2 else ''
-                            }
-                            substituir_variaveis_em_tudo(doc, dados_alunos)
-                            aluno1_sanitizado = sanitizar_nome(aluno1)
-                            if aluno2:
-                                aluno2_sanitizado = sanitizar_nome(aluno2)
-                                nome_arquivo = f"{aluno1_sanitizado}_e_{aluno2_sanitizado}_gabarito.docx"
-                            else:
-                                nome_arquivo = f"{aluno1_sanitizado}_gabarito.docx"
-                            doc.save(os.path.join(base_dir, nome_arquivo))
-                            print(f"Arquivo salvo (2 alunos): {nome_arquivo}")
+                    alunos = grupo['NOME DO ALUNO'].tolist()
+                    professor_regente = grupo['PROFESSOR REGENTE'].iloc[0] if not grupo['PROFESSOR REGENTE'].empty else "Não especificado"
+                    
+                    if config.gerar_lista_presenca or config.apenas_lista_presenca:
+                        criar_lista_presenca(escola, turma_sanitizada, alunos, turma_dir,
+                                           config.titulo_lista, config.cores, config.data_lista)
+                    
+                    # Só gera os gabaritos se não estiver no modo "apenas lista de presença"
+                    if not config.apenas_lista_presenca:
+                        if config.process_mode == "um_aluno":
+                            for aluno in alunos:
+                                doc = Document(modelo_path)
+                                dados_aluno = {
+                                    '$VARIÁVEL ESCOLA': escola,
+                                    '$VARIÁVEL TURMA': turma,  # Usando a turma já limpa
+                                    '$VARIÁVEL PROFESSOR REGENTE': professor_regente,
+                                    '$VARIÁVEL NOME DO ALUNO': aluno,
+                                    '$VARIÁVEL NOME DO ALUNO 2': ''
+                                }
+                                substituir_variaveis_em_tudo(doc, dados_aluno)
+                                nome_arquivo = f"{sanitizar_nome(aluno)}_gabarito.docx"
+                                doc.save(os.path.join(turma_dir, nome_arquivo))  # Salva na pasta da turma
+                                print(f"Arquivo salvo (1 aluno): {nome_arquivo}")
+
+                        else:
+                            for i in range(0, len(alunos), 2):
+                                aluno1 = alunos[i]
+                                aluno2 = alunos[i + 1] if (i + 1) < len(alunos) else None
+                                doc = Document(modelo_path)
+                                dados_alunos = {
+                                    '$VARIÁVEL ESCOLA': escola,
+                                    '$VARIÁVEL TURMA': turma,
+                                    '$VARIÁVEL PROFESSOR REGENTE': professor_regente,
+                                    '$VARIÁVEL NOME DO ALUNO': aluno1,
+                                    '$VARIÁVEL NOME DO ALUNO 2': aluno2 if aluno2 else ''
+                                }
+                                substituir_variaveis_em_tudo(doc, dados_alunos)
+                                aluno1_sanitizado = sanitizar_nome(aluno1)
+                                if aluno2:
+                                    aluno2_sanitizado = sanitizar_nome(aluno2)
+                                    nome_arquivo = f"{aluno1_sanitizado}_e_{aluno2_sanitizado}_gabarito.docx"
+                                else:
+                                    nome_arquivo = f"{aluno1_sanitizado}_gabarito.docx"
+                                doc.save(os.path.join(turma_dir, nome_arquivo))  # Salva na pasta da turma
+                                print(f"Arquivo salvo (2 alunos): {nome_arquivo}")
 
         return True, "Documentos gerados com sucesso!"
     except Exception as e:
