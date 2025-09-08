@@ -1,5 +1,5 @@
 # 📄 Gerador de Gabaritos e Listas de Presença  
-### _Desenvolvido por Lindilson Silva_
+
 
 Uma ferramenta prática e personalizável para escolas que precisam gerar **listas de presença** e **gabaritos** de forma rápida e organizada — com suporte a múltiplos formatos de arquivos e visual moderno.
 
