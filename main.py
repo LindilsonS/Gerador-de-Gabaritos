@@ -99,7 +99,7 @@ def substituir_variaveis_em_tudo(doc, dados):
     
     return doc
 
-def criar_lista_presenca(escola, nome_grupo, items, diretorio_saida, titulo_lista="Lista de Presença", cores=None, data_lista=None, is_teacher_list=False):
+def criar_lista_presenca(escola, nome_grupo, items, diretorio_saida, titulo_lista="Lista de Presença", cores=None, data_lista=None, is_teacher_list=False, turma=None):
     items = sorted(items) if not is_teacher_list else items
     caminho_arquivo = os.path.join(diretorio_saida, f"lista_presenca_{nome_grupo}.pdf")
     c = canvas.Canvas(caminho_arquivo, pagesize=A4)
@@ -119,7 +119,12 @@ def criar_lista_presenca(escola, nome_grupo, items, diretorio_saida, titulo_list
         c.drawCentredString(largura / 2, margem_superior, titulo_lista)
         c.setFont("Helvetica-Bold", font_size)
         c.setFillColor(colors.HexColor(cores["cabecalho"]))
-        c.drawCentredString(largura / 2, margem_superior - 20, f"Escola: {escola}")
+        
+        # Modificação para incluir a turma
+        cabecalho_escola = f"Escola: {escola}"
+        if not is_teacher_list and turma:
+            cabecalho_escola += f" | Turma: {turma}"
+        c.drawCentredString(largura / 2, margem_superior - 20, cabecalho_escola)
         c.setFont("Helvetica", font_size)
         c.setFillColor(colors.black)
         texto_data = f"Data: {data_lista}" if data_lista else "Data: ____________"
@@ -170,37 +175,30 @@ def criar_gabaritos(csv_path, modelo_path, output_dir, config, etapas_selecionad
         csv_format = detect_csv_format(df)
         
         if csv_format == "professor_format":
-            df = df.rename(columns={
-                'ETAPA': 'ETAPA DE ENSINO',
-                'NOME DA ESCOLA': 'ESCOLA'
-            })
+            df = df.rename(columns={'ETAPA': 'ETAPA DE ENSINO', 'NOME DA ESCOLA': 'ESCOLA'})
         
-        if config.is_teacher_list:
-            if csv_format == "professor_format":
-                colunas_necessarias = {'ESCOLA', 'NOME DO PROFESSOR', 'CPF DO PROFESSOR'}
-            else:
-                colunas_necessarias = {'ESCOLA', 'PROFESSOR REGENTE'}
-        else:
-            if csv_format == "professor_format":
-                raise ValueError("Este arquivo CSV contém apenas dados de professores")
-            colunas_necessarias = {'ESCOLA', 'TURMA', 'NOME DO ALUNO', 'PROFESSOR REGENTE', 'ETAPA DE ENSINO'}
-            
-        if not colunas_necessarias.issubset(df.columns):
-            raise ValueError(f"O arquivo CSV deve conter as colunas: {', '.join(colunas_necessarias)}")
-
         if escolas_selecionadas is None:
             escolas_selecionadas = df['ESCOLA'].dropna().unique()
-
-        df_filtrado = df[df['ESCOLA'].fillna('').isin(escolas_selecionadas)].copy()
+        
+        mask_escolas = df['ESCOLA'].fillna('').isin(escolas_selecionadas)
+        
+        if etapas_selecionadas:
+            mask_etapas = df['ETAPA DE ENSINO'].fillna('').isin(etapas_selecionadas)
+            df_filtrado = df[mask_escolas & mask_etapas].copy()
+        else:
+            df_filtrado = df[mask_escolas].copy()
         
         if df_filtrado.empty:
-            return True, "Nenhum registro encontrado para as escolas selecionadas."
-
-        for escola in escolas_selecionadas:
-            escola_df = df_filtrado[df_filtrado['ESCOLA'] == escola]
-            escola_sanitizada = sanitizar_nome(escola)
+            return True, "Nenhum registro encontrado para as escolas/etapas selecionadas."
             
-            # Cria diretório base da escola
+        escolas_com_dados = df_filtrado['ESCOLA'].unique()
+
+        for escola in escolas_com_dados:
+            escola_df = df_filtrado[df_filtrado['ESCOLA'] == escola]
+            if escola_df.empty:
+                continue
+                
+            escola_sanitizada = sanitizar_nome(escola)
             escola_dir = os.path.join(output_dir, escola_sanitizada)
             os.makedirs(escola_dir, exist_ok=True)
 
@@ -229,12 +227,15 @@ def criar_gabaritos(csv_path, modelo_path, output_dir, config, etapas_selecionad
                     os.makedirs(turma_dir, exist_ok=True)
 
                     alunos = grupo['NOME DO ALUNO'].tolist()
-                    professor_regente = grupo['PROFESSOR REGENTE'].iloc[0] if not grupo['PROFESSOR REGENTE'].empty else "Não especificado"
+                    # Fix professor handling - replace NaN with empty string
+                    professor_regente = grupo['PROFESSOR REGENTE'].iloc[0]
+                    professor_regente = '' if pd.isna(professor_regente) else professor_regente
                     
                     if config.gerar_lista_presenca or config.apenas_lista_presenca:
                         criar_lista_presenca(escola, turma_sanitizada, alunos, turma_dir,
-                                           config.titulo_lista, config.cores, config.data_lista)
-                    
+                                           config.titulo_lista, config.cores, config.data_lista,
+                                           is_teacher_list=False, turma=turma)  # Adicionando a turma como parâmetro
+    
                     # Só gera os gabaritos se não estiver no modo "apenas lista de presença"
                     if not config.apenas_lista_presenca:
                         if config.process_mode == "um_aluno":
